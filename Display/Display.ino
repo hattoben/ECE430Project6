@@ -13,8 +13,12 @@
 #define DISP_ADDR 0x3C // I2C address of oled
 
 // constants for interrupts
-const uint8_t LBUTTON_PIN = PA10;  // arduino D2
-const uint8_t RBUTTON_PIN = PB3;   // arduino D3
+const uint8_t LBUTTON_PIN = PA10; // arduino D2
+const uint8_t RBUTTON_PIN = PB3; // arduino D3
+const uint8_t POT_PIN = PA0; // arduino A0
+
+// variable for ADC read
+int potValue = 0;
 
 // image for screen 2
 const unsigned char MSU_Logo [] PROGMEM = {
@@ -58,6 +62,7 @@ enum class State {
   OPTION_1,
   OPTION_2,
   OPTION_3,
+  OPTION_4,
   COUNT
 };
 
@@ -117,6 +122,9 @@ void setup() {
 
   attachInterrupt(digitalPinToInterrupt(LBUTTON_PIN), lButtonISR, FALLING);
   attachInterrupt(digitalPinToInterrupt(RBUTTON_PIN), rButtonISR, FALLING);
+
+  // configure potentiometer
+  pinMode(A0, INPUT);
 }
 
 void loop() {
@@ -144,7 +152,7 @@ void loop() {
     
     display.display();
   }
-  if (currentState == State::OPTION_2){
+  if (currentState == State::OPTION_2) {
     // clear display on state change
     display.clearDisplay();
 
@@ -162,7 +170,7 @@ void loop() {
     display.drawBitmap(0, 17, MSU_Logo, 48, 48, WHITE);
     display.display();
   }
-  if (currentState == State::OPTION_3){
+  if (currentState == State::OPTION_3) {
     static uint8_t frameIdx = 0;
 
     display.clearDisplay();
@@ -176,6 +184,31 @@ void loop() {
 
     frameIdx = (frameIdx + 1) % FRAME_COUNT;
     delay(50); // ~20 fps
+  }
+  if (currentState == State::OPTION_4) {
+    potValue = analogRead(POT_PIN);
+    float voltage = (potValue * 3.3) / 4095;
+
+    display.clearDisplay();
+
+    display.setTextSize(1);
+    display.setTextColor(WHITE);
+    display.setCursor(0, 0);
+    
+    // Display static text
+    display.println("Screen 4 - Reading\nPotentiometer Value");
+    
+    display.setTextSize(1);
+    display.setCursor(0, 17);
+    display.print("ADC Value: ");
+    display.println(potValue);
+
+    display.print("Voltage: ");
+    display.print(voltage);
+    display.print(" V");
+
+    display.display();
+    delay(50);
   }
 }
 
