@@ -129,86 +129,90 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  if (currentState == State::OPTION_1) {
-    // clear display on state change
-    display.clearDisplay();
+  // state machine
+  switch (currentState) {
+    case State::OPTION_1:
+      // clear display on state change
+      display.clearDisplay();
+      
+      // set up text
+      display.setTextSize(1);
+      display.setTextColor(WHITE);
+      
+      // Display static text
+      display.setCursor(0, 0);
+      display.println("Screen 1 - Text");
+
+      display.setCursor(0, 17);
+      display.println("Hello, world!");
     
-    // set up text
-    display.setTextSize(1);
-    display.setTextColor(WHITE);
-    
-    // Display static text
-    display.setCursor(0, 0);
-    display.println("Screen 1 - Text");
+      display.setCursor(0, 30);
+      display.println("ECE 430 Project 6");
 
-    display.setCursor(0, 17);
-    display.println("Hello, world!");
-  
-    display.setCursor(0, 30);
-    display.println("ECE 430 Project 6");
+      display.setCursor(0, 40);
+      display.println("SSD1306 OLED Module\nand Adafruit\nGraphics Library");
+      
+      display.display();
+      break;
+    case State::OPTION_2:
+      // clear display on state change
+      display.clearDisplay();
 
-    display.setCursor(0, 40);
-    display.println("SSD1306 Display Module and Adafruit Graphics Library");
-    
-    display.display();
-  }
-  if (currentState == State::OPTION_2) {
-    // clear display on state change
-    display.clearDisplay();
+      display.setTextSize(1);
+      display.setTextColor(WHITE);
+      display.setCursor(0, 0);
+      
+      // Display static text
+      display.println("Screen 2 - Image");
 
-    display.setTextSize(1);
-    display.setTextColor(WHITE);
-    display.setCursor(0, 0);
-    
-    // Display static text
-    display.println("Screen 2 - Image");
+      display.setCursor(64, 17);
+      display.println("Go Green!");
 
-    display.setCursor(64, 17);
-    display.println("Go Green!");
+      // Display an image
+      display.drawBitmap(0, 17, MSU_Logo, 48, 48, WHITE);
+      display.display();
+      break;
+    case State::OPTION_3:
+      static uint8_t frameIdx = 0;
 
-    // Display an image
-    display.drawBitmap(0, 17, MSU_Logo, 48, 48, WHITE);
-    display.display();
-  }
-  if (currentState == State::OPTION_3) {
-    static uint8_t frameIdx = 0;
+      display.clearDisplay();
+      display.setTextSize(1);
+      display.setTextColor(WHITE);
+      display.setCursor(0, 0);
+      display.println("Screen 3 - Animation");
+      
+      display.drawBitmap(32, 8, ANIMATION_FRAMES[frameIdx], FRAME_W, FRAME_H, WHITE);
+      display.display();
 
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setTextColor(WHITE);
-    display.setCursor(0, 0);
-    display.println("Screen 3 - Animation");
-    
-    display.drawBitmap(32, 8, ANIMATION_FRAMES[frameIdx], FRAME_W, FRAME_H, WHITE);
-    display.display();
+      frameIdx = (frameIdx + 1) % FRAME_COUNT;
+      delay(50); // ~20 fps
+      break;
+    case State::OPTION_4:
+      potValue = analogRead(POT_PIN);
+      float voltage = (potValue * 3.3) / 1023;
 
-    frameIdx = (frameIdx + 1) % FRAME_COUNT;
-    delay(50); // ~20 fps
-  }
-  if (currentState == State::OPTION_4) {
-    potValue = analogRead(POT_PIN);
-    float voltage = (potValue * 3.3) / 4095;
+      display.clearDisplay();
 
-    display.clearDisplay();
+      display.setTextSize(1);
+      display.setTextColor(WHITE);
+      display.setCursor(0, 0);
+      
+      // Display static text
+      display.println("Screen 4 - Reading\nPotentiometer Value");
+      
+      display.setTextSize(1);
+      display.setCursor(0, 17);
+      display.print("ADC Value: ");
+      display.println(potValue);
 
-    display.setTextSize(1);
-    display.setTextColor(WHITE);
-    display.setCursor(0, 0);
-    
-    // Display static text
-    display.println("Screen 4 - Reading\nPotentiometer Value");
-    
-    display.setTextSize(1);
-    display.setCursor(0, 17);
-    display.print("ADC Value: ");
-    display.println(potValue);
+      display.print("Voltage: ");
+      display.print(voltage);
+      display.print(" V");
 
-    display.print("Voltage: ");
-    display.print(voltage);
-    display.print(" V");
+      display.display();
+      delay(50);
+      break;
 
-    display.display();
-    delay(50);
   }
 }
 
