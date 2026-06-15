@@ -12,13 +12,10 @@
 #define SCREEN_HEIGHT 64 // oled display height (px)
 #define DISP_ADDR 0x3C // I2C address of oled
 
-// constants for interrupts
+// constants for inputs
 const uint8_t LBUTTON_PIN = PA10; // arduino D2
 const uint8_t RBUTTON_PIN = PB3; // arduino D3
-const uint8_t POT_PIN = PA0; // arduino A0
-
-// variable for ADC read
-int potValue = 0;
+const uint8_t POT_PIN = PA0; // arduino A0 
 
 // image for screen 2
 const unsigned char MSU_Logo [] PROGMEM = {
@@ -53,6 +50,7 @@ const uint8_t* const ANIMATION_FRAMES[] PROGMEM = {
   frame36, frame37, frame38, frame39, frame40, frame41,
   frame42, frame43, frame44, frame45, frame46, frame47
 };
+
 const uint8_t FRAME_COUNT = 48;
 const uint16_t FRAME_W = 64;
 const uint16_t FRAME_H = 48;
@@ -188,7 +186,7 @@ void loop() {
       delay(50); // ~20 fps
       break;
     case State::OPTION_4:
-      potValue = analogRead(POT_PIN);
+      int potValue = analogRead(POT_PIN);
       float voltage = (potValue * 3.3) / 1023;
 
       display.clearDisplay();
